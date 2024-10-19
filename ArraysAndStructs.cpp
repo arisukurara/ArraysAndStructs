@@ -18,11 +18,9 @@ int getData(string names[], int runnerData[][NUM_DAYS]) {
     int rowIndex = 0;
     while (runners >> names[rowIndex]) { // Read the name and puts it into the names array
         for (int col = 0; col < NUM_DAYS; col++) {
-            runners >> runnerData[rowIndex][col]; // Read miles into milesRan array for each day while on that runner
-            //cout << milesRan[rowIndex][col] << endl;
+            runners >> runnerData[rowIndex][col]; // Read miles into runnerData array for each day while on that runner
         }
-        //cout << names[rowIndex] << endl;
-        rowIndex++; // Move to the next row (next runner)
+        rowIndex++;
     }
     runners.close();
     return rowIndex;
@@ -41,7 +39,7 @@ double averageMiles(double totalMiles) {
 }
 
 void outputResults(int rowIndex) {
-    if (rowIndex == 0) {
+    if (rowIndex == 0) { // only do this for first row
         cout << left << setw(10) << "Name";
         for (int i = 0; i < NUM_DAYS; i++) {
             cout << right << setw(10) << ("Day " + to_string(i + 1));
