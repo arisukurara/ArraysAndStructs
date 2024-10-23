@@ -10,26 +10,30 @@ using namespace std;
 const int NUM_RUNNERS = 99;
 const int NUM_DAYS = 7;
 
-string names[NUM_RUNNERS];
-int runnerData[NUM_RUNNERS][NUM_DAYS];
+struct Runner {
+    string name;
+    int miles[NUM_DAYS];
+};
 
-int getData(string names[], int runnerData[][NUM_DAYS]) {
-    std::ifstream runners("runners.txt");
-    int rowIndex = 0;
-    while (runners >> names[rowIndex]) { // Read the name and puts it into the names array
-        for (int col = 0; col < NUM_DAYS; col++) {
-            runners >> runnerData[rowIndex][col]; // Read miles into runnerData array for each day while on that runner
+Runner runners[NUM_RUNNERS];
+
+int getData(Runner runners[]) {
+    ifstream textFile("runners.txt");
+    int index = 0;
+    while (textFile >> runners[index].name) { // Reads the name from struct and puts it into the names array
+        for (int day = 0; day < NUM_DAYS; day++) {
+            textFile >> runners[index].miles[day]; // Read miles into runnerData array for each day while on that runner
         }
-        rowIndex++;
+        index++;
     }
-    runners.close();
-    return rowIndex;
+    textFile.close();
+    return index;
 }
 
-double totalMiles(int rowIndex) {
+double totalMiles(const Runner& runner) {
     double totalMiles = 0;
-    for (int col = 0; col < NUM_DAYS; col++) {
-        totalMiles += runnerData[rowIndex][col];
+    for (int day = 0; day < NUM_DAYS; day++) {
+        totalMiles += runner.miles[day];
     }
     return totalMiles;
 }
@@ -38,8 +42,8 @@ double averageMiles(double totalMiles) {
     return totalMiles / 7;
 }
 
-void outputResults(int rowIndex) {
-    if (rowIndex == 0) { // only do this for first row
+void outputResults(const Runner& runner, bool isFirstRow) {
+    if (isFirstRow) { // only do this for first row
         cout << left << setw(10) << "Name";
         for (int i = 0; i < NUM_DAYS; i++) {
             cout << right << setw(10) << ("Day " + to_string(i + 1));
@@ -50,24 +54,27 @@ void outputResults(int rowIndex) {
         cout << "------------------------------------------------------------------------------------------------------";
         cout << endl;
     }
-    cout << left << setw(10) << names[rowIndex]; //prints name for that index
-    for (int col = 0; col < NUM_DAYS; col++) {
-        cout << right << setw(10) << runnerData[rowIndex][col]; // prints data for each day
+
+    // Print runner's name
+    cout << left << setw(10) << runner.name;
+
+    // Print miles for each day
+    for (int day = 0; day < NUM_DAYS; day++) {
+        cout << right << setw(10) << runner.miles[day];
     }
 
-    double total = totalMiles(rowIndex);
-
+    // Calculate and print total and average miles
+    double total = totalMiles(runner);
     cout << right << setw(10) << total;
     cout << right << setprecision(3) << setw(10) << averageMiles(total);
     cout << endl;
 }
 
 
-int main()
-{
-    int numberOfRows = getData(names, runnerData);
-    for (int i = 0; i < numberOfRows; i++) {
-        outputResults(i);
+int main() {
+    int numberOfRunners = getData(runners); // Load data into struct array
+    for (int i = 0; i < numberOfRunners; i++) {
+        outputResults(runners[i], i == 0); // Output results for each runner
     }
 }
 
